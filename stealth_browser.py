@@ -48,8 +48,8 @@ class StealthBrowser:
             user_agent=self.user_agent,
             viewport=self.viewport,
             locale='en-US',
-            timezone_id='America/New_
-extra_http_headers={
+            timezone_id='America/New_York',
+            extra_http_headers={
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
