@@ -49,3 +49,62 @@ class StealthBrowser:
             viewport=self.viewport,
             locale='en-US',
             timezone_id='America/New_
+extra_http_headers={
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+            }
+        )
+        
+        # Inject anti-detection scripts
+        self.context.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+            });
+            
+            Object.defineProperty(navigator, 'plugins', {
+                get: () => [1, 2, 3, 4, 5]
+            });
+            
+            window.chrome = { runtime: {} };
+            
+            Object.defineProperty(navigator, 'languages', {
+                get: () => ['en-US', 'en']
+            });
+        """)
+        
+        self.page = self.context.new_page()
+        logger.info(f"Browser started - UA: {self.user_agent[:50]}...")
+        
+    def navigate(self, url, wait_for='networkidle'):
+        """Navigate to URL with stealth timing"""
+        logger.info(f"Navigating to: {url}")
+        
+        time.sleep(random.uniform(1, 2))
+        
+        try:
+            self.page.goto(url, wait_until=wait_for, timeout=TIMEOUT)
+            time.sleep(random.uniform(2, 4))
+            logger.info("Page loaded successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Navigation failed: {e}")
+            return False
+    
+    def screenshot(self, filename):
+        """Take screenshot"""
+        self.page.screenshot(path=filename, full_page=True)
+        logger.info(f"Screenshot saved: {filename}")
+    
+    def close(self):
+        """Clean shutdown"""
+        if self.context:
+            self.context.close()
+        if self.browser:
+            self.browser.close()
+        if self.playwright:
+            self.playwright.stop()
+        logger.info("Browser closed")
